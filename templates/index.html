@@ -126,6 +126,7 @@
         <div class="result-section">
             <h2>Predicted Segment: {{ prediction }}</h2>
             <h3>Cluster ID: {{ cluster }}</h3>
+            <button onclick="window.print()" class="print-btn">Print Result</button>
 
             <div id="chartData" 
                  data-budget="{{ pie_data['Budget Customer'] }}"
