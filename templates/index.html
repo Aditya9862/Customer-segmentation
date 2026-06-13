@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* 1. Global Reset (No global background color here!) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; 
+            font-family: Arial, sans-serif;
+        }
+        
+        /* 2. Put the background color explicitly on the page body */
+        body {
+            background-color: #DDDDDD;
+        }
+
+        .header {
+            background-color: #723EC3;
+            color: white;
+            height: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Layout Container: Form and Result side-by-side */
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        .form-section {
+            flex: 1; 
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        /* Styled inputs so they don't inherit gray background */
+        .form-section input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white; 
+        }
+
+        .result-section {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chart-wrapper {
+            width: 100%;
+            max-width: 350px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #723EC3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+    <title>Customer Personality Segmentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <h1 class="header">Customer Personality Prediction</h1>
+
+    <div class="main-container">
+        <div class="form-section">
+            <form action="/predict" method="POST">
+                <label>Age</label><br>
+                <input type="number" name="age" required><br><br>
+
+                <label>Total Purchases</label><br>
+                <input type="number" name="total_purchases" required><br><br>
+
+                <label>Income</label><br>
+                <input type="number" name="income" required><br><br>
+
+                <label>Total Spending</label><br>
+                <input type="number" name="spending" required><br><br>
+
+                <label>Children</label><br>
+                <input type="number" name="children" required><br><br>
+
+                <label>Recency</label><br>
+                <input type="number" name="recency" required><br><br>
+
+                <label>Web Purchases</label><br>
+                <input type="number" name="web" required><br><br>
+
+                <label>Catalog Purchases</label><br>
+                <input type="number" name="catalog" required><br><br>
+
+                <label>Store Purchases</label><br>
+                <input type="number" name="store" required><br><br>
+
+                <button type="submit">Predict Segment</button>
+            </form>
+        </div>
+
+        {% if prediction %}
+        <div class="result-section">
+            <h2>Predicted Segment: {{ prediction }}</h2>
+            <h3>Cluster ID: {{ cluster }}</h3>
+
+            <div id="chartData" 
+                 data-budget="{{ pie_data['Budget Customer'] }}"
+                 data-regular="{{ pie_data['Regular Customer'] }}"
+                 data-premium="{{ pie_data['Premium Customer'] }}"
+                 style="display: none;">
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="segmentChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            const chartDataEl = document.getElementById('chartData');
+            const budgetVal = Number(chartDataEl.dataset.budget) || 0;
+            const regularVal = Number(chartDataEl.dataset.regular) || 0;
+            const premiumVal = Number(chartDataEl.dataset.premium) || 0;
+
+            new Chart(
+                document.getElementById('segmentChart'),
+                {
+                    type: 'pie',
+                    data: {
+                        labels: ["Budget Customer", "Regular Customer", "Premium Customer"],
+                        datasets: [{
+                            data: [budgetVal, regularVal, premiumVal],
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                }
+            );
+        </script>
+        {% endif %}
+    </div>
+
+</body>
+</html>
